@@ -31,6 +31,8 @@ from bs4 import BeautifulSoup
 import socket
 from ebooklib import epub
 import re
+from string import Template
+
 
 # timeout in seconds
 timeout = 10
@@ -149,24 +151,13 @@ if __name__ == "__main__":
         book.add_item(body_css)
 
         # Introduction
-        # TODO: Extract HTML to an independent file
         intro_ch = epub.EpubHtml(title='Introduction', file_name='intro.xhtml')
         intro_ch.add_item(body_css)
-        intro_ch.content = """
-        <html>
-        <head>
-            <title>Introduction</title>
-            <link rel="stylesheet" href="style/body.css" type="text/css" />
-        </head>
-        <body>
-            <h1>Introduction</h1>
-            <p><b>Title: {0}</b></p>
-            <p><b>Copyright by: {1}</b></p>
-            <p>As published in: <a href="{2}">{2}</a></p>
-            <p><b>Description:</b> {3}</p>
-        </body>
-        </html>
-        """.format(title, author, initial_url, description)
+        intro_template = Template(open("HTML/intro.xhtml").read())
+        intro_html = intro_template.substitute(title=title, author=author,
+                                                 url=initial_url,
+                                                 description=description)
+        intro_ch.content = intro_html
         book.add_item(intro_ch)
 
         allchapters = []
