@@ -84,7 +84,7 @@ def get_page(text_url):
 
 def get_chapter(url):
     pagehtml = get_html(url)
-    if pagehtml.select('div#paging form.paging_form') == []:
+    if not pagehtml.select('div#paging form.paging_form'):
         pages = 1
     else:
         pages = int(pagehtml.select('form.paging_form')[0].get_text().split(" ")[-1])
