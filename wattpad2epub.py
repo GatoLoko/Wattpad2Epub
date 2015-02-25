@@ -40,7 +40,7 @@ socket.setdefaulttimeout(timeout)
 # Get the page url we want to process
 # initial_url = sys.argv[1]
 if len(sys.argv) > 1:
-    initial_utl = sys.argv[1]
+    initial_url = sys.argv[1]
 else:
     print("You must provide an argument")
     quit()
