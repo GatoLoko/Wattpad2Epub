@@ -156,7 +156,7 @@ if __name__ == "__main__":
         intro_template = Template(open("HTML/intro.xhtml").read())
         intro_html = intro_template.substitute(title=title, author=author,
                                                url=initial_url,
-                                               description=description)
+                                               synopsis=description)
         intro_ch.content = intro_html
         book.add_item(intro_ch)
 
