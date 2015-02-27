@@ -91,7 +91,7 @@ def get_chapter(url):
     print("Pages in this chapter: {}".format(pages))
     text = []
     chaptertitle = pagehtml.select('option[selected]')[0].get_text()
-    chapterfile = "{}.epub".format(chaptertitle)
+    chapterfile = "{}.xhtml".format(chaptertitle)
     for i in range(0, pages):
         script = str(pagehtml.select('div.container.left.clearfix script')[0])
         for j in script.split("\n"):
