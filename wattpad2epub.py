@@ -139,11 +139,11 @@ if __name__ == "__main__":
         # os.remove("cover.jpg")
 
         # Define CSS style
-        nav_css = epub.EpubItem(uid="style_nav", file_name="style/nav.css",
+        nav_css = epub.EpubItem(uid="style_nav", file_name="Style/nav.css",
                                 media_type="text/css",
                                 content=open("CSS/nav.css").read())
 
-        body_css = epub.EpubItem(uid="style_body", file_name="style/body.css",
+        body_css = epub.EpubItem(uid="style_body", file_name="Style/body.css",
                                  media_type="text/css",
                                  content=open("CSS/body.css").read())
         # Add CSS file
