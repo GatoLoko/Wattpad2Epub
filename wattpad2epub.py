@@ -177,10 +177,10 @@ if __name__ == "__main__":
         book.add_item(epub.EpubNav())
 
         # Basic spine
-        myspyne = [intro_ch, 'nav']
+        myspine = [intro_ch, 'nav']
         for i in allchapters:
-            myspyne.append(i)
-        book.spine = myspyne
+            myspine.append(i)
+        book.spine = myspine
 
         # Write the epub to file
         epub.write_epub(epubfile, book, {})
