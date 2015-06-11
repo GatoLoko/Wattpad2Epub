@@ -71,37 +71,25 @@ def clean_text(text):
 
 
 def get_page(text_url):
-    tries = 5
-    while tries > 0:
-        try:
-            request = urllib.request.urlopen(text_url)
-            text = clean_text(str(request.read().decode('utf-8')))
-            return text
-        except:
-            tries -= 1
-    return None
+    text = get_html(text_url).select('pre')
+    return text
 
 
 def get_chapter(url):
     pagehtml = get_html(url)
-    if not pagehtml.select('div#paging form.paging_form'):
-        pages = 1
-    else:
-        pages = int(pagehtml.select('form.paging_form')[0].get_text().split(" ")[-1])
+    print("Current url: " + url)
+    pages_re = re.compile('.*"pages":([0-9]*),.*', re.IGNORECASE)
+    pages = int(pages_re.search(str(pagehtml)).group(1))
     print("Pages in this chapter: {}".format(pages))
     text = []
-    chaptertitle = pagehtml.select('option[selected]')[0].get_text()
+    chaptertitle = pagehtml.select('span.title.h5')[0].get_text().strip()
     chapterfile = "{}.xhtml".format(chaptertitle)
-    for i in range(0, pages):
-        script = str(pagehtml.select('div.container.left.clearfix script')[0])
-        for j in script.split("\n"):
-            if 'storyTextUrl' in j:
-                text_url = j.split('"')[1]
-                text.append(get_page(text_url))
-        if pages > 1:
-            url = "{}{}".format(base_url,
-                                pagehtml.select('a.next_page')[0]['href'])
-            pagehtml = get_html(url)
+    for i in range(1, pages+1):
+        print("Working on: {}{}{}".format(url, "/page/", i))
+        text.append('<div class="page">\n')
+        for j in get_page("{}{}{}".format(url, "/page/", i)):
+            text.append(j.prettify())
+        text.append('</div>\n')
     chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
                             lang='en')
     chapter.content = "".join(text)
