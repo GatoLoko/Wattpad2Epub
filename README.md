@@ -4,8 +4,6 @@
 
 Wattpad2Epub downloads and converts Wattpad books into Epub files you can use with your favorite ebook reader.
 
-NOTE: Current version has been rendered obsolete by a change on wattpad site. I'll try to fix it using the official wattpad api.
-
 ## On Wattpad's API
 
 I've made some quick & dirty tests using the official Wattpad API, and most probably made a few mistakes, but here is what I've found:
