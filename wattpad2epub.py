@@ -44,8 +44,9 @@ socket.setdefaulttimeout(timeout)
 if len(sys.argv) > 1:
     initial_url = sys.argv[1]
 else:
-    print("You must provide an argument")
-    quit()
+    print("You must provide a story URL")
+    quit(os.EX_USAGE)
+
 # Sample book URL: http://www.wattpad.com/story/12345678-title-here
 # Sample first page URL: http://www.wattpad.com/91011121-title-here
 initial_url = 'http://www.wattpad.com/story/11561902-rainbow-reflection'
