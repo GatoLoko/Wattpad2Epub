@@ -4,6 +4,12 @@
 
 Wattpad2Epub downloads and converts Wattpad books into Epub files you can use with your favorite ebook reader.
 
+## Why Wattpad2Epub?
+
+Wattpad doesn't offer an option to download a book. This forces you to remain online while reading, and use wattpad's application to access the stories.
+
+Having those stories in epub format allows storing them as a backup, offline reading and self publication.
+
 ## On Wattpad's API
 
 I've made some quick & dirty tests using the official Wattpad API, and most probably made a few mistakes, but here is what I've found:
@@ -15,9 +21,3 @@ I've made some quick & dirty tests using the official Wattpad API, and most prob
   - Needed double identification (application + user)
 
 Based on this findings, I've chosen to keep parsing the html, at least for a while.
-
-## Why Wattpad2Epub?
-
-Wattpad doesn't offer an option to download a book. This forces you to remain online while reading, and use wattpad's application to access the stories.
-
-Having those stories in epub format allows storing them as a backup, offline reading and self publication.
