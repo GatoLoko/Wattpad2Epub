@@ -14,10 +14,10 @@ Having those stories in epub format allows storing them as a backup, offline rea
 
 I've made some quick & dirty tests using the official Wattpad API, and most probably made a few mistakes, but here is what I've found:
 
-  - It's in beta state
+  - It's in beta state, wich means it may still change
   - The documentation seems to be missing some parts
   - There were some server failures during my tests
   - Couldn't find a reliable way to retrieve a full story text
   - Needed double identification (application + user)
 
-Based on this findings, I've chosen to keep parsing the html, at least for a while.
+Based on this findings, I've chosen to keep parsing the html, at least for a now.
