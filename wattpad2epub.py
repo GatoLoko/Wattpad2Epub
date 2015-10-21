@@ -57,8 +57,10 @@ def get_html(url):
     tries = 5
     while tries > 0:
         try:
-            request = urllib.request.urlopen(url).read()
-            soup = BeautifulSoup(request)
+            req = urllib.request.Request(url)
+            req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
+            request = urllib.request.urlopen(req)
+            soup = BeautifulSoup(request.read())
             return soup
         except socket.timeout:
             tries -= 1
