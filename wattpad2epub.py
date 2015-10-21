@@ -108,7 +108,10 @@ if __name__ == "__main__":
     title = html.select('h1')[0].get_text().strip()
     description = html.select('pre.description')[0].get_text()
     coverurl = html.select('div.cover.cover-lg img')[0]['src']
-    labels = html.select('div.tags a')
+    labels = ['Wattpad']
+    for label in html.select('div.tags a'):
+        if '/' in label['href']:
+            labels.append(label.get_text())
 
     print("'{}' by {}".format(title, author))
     # print(next_page_url)
@@ -123,6 +126,9 @@ if __name__ == "__main__":
         book.set_title(title)
         book.add_author(author)
         book.set_language('en')
+        #book.add_metadata('DC', 'subject', 'Wattpad')
+        for label in labels:
+            book.add_metadata('DC', 'subject', label)
         # TODO: add a cover without breaking everything
         # urllib.request.urlretrieve(coverurl, "cover.jpg")
         # img = open("cover.jpg", "r", encoding="utf-8")
