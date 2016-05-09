@@ -60,7 +60,7 @@ def get_html(url):
             req = urllib.request.Request(url)
             req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
             request = urllib.request.urlopen(req)
-            soup = BeautifulSoup(request.read())
+            soup = BeautifulSoup(request.read(), "html.parser")
             return soup
         except socket.timeout:
             tries -= 1
