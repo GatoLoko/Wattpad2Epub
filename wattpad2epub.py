@@ -85,7 +85,7 @@ def get_chapter(url):
     pages = int(pages_re.search(str(pagehtml)).group(1))
     print("Pages in this chapter: {}".format(pages))
     text = []
-    chaptertitle = pagehtml.select('span.title.h5')[0].get_text().strip()
+    chaptertitle = pagehtml.select('h2')[0].get_text().strip()
     chapterfile = "{}.xhtml".format(chaptertitle)
     for i in range(1, pages+1):
         print("Working on: {}{}{}".format(url, "/page/", i))
@@ -106,7 +106,7 @@ if __name__ == "__main__":
     # Get basic book information
     author = html.select('div.author-info strong a')[0].get_text()
     title = html.select('h1')[0].get_text().strip()
-    description = html.select('pre.description')[0].get_text()
+    description = html.select('h2.description')[0].get_text()
     coverurl = html.select('div.cover.cover-lg img')[0]['src']
     labels = ['Wattpad']
     for label in html.select('div.tags a'):
