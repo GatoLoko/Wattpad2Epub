@@ -126,7 +126,7 @@ if __name__ == "__main__":
         book.set_title(title)
         book.add_author(author)
         book.set_language('en')
-        #book.add_metadata('DC', 'subject', 'Wattpad')
+        # book.add_metadata('DC', 'subject', 'Wattpad')
         for label in labels:
             book.add_metadata('DC', 'subject', label)
         # TODO: add a cover without breaking everything
