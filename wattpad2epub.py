@@ -159,11 +159,12 @@ if __name__ == "__main__":
 
         allchapters = []
         for item in chapterlist:
-            chaptertitle = item.get_text().strip()
-            print("Working on: {}".format(chaptertitle))
-            chapter = get_chapter("{}{}".format(base_url, item['href']))
-            book.add_item(chapter)
-            allchapters.append(chapter)
+            chaptertitle = item.get_text().strip().replace("/", "-")
+            if chaptertitle.upper() != "A-N":
+                print("Working on: {}".format(chaptertitle))
+                chapter = get_chapter("{}{}".format(base_url, item['href']))
+                book.add_item(chapter)
+                allchapters.append(chapter)
 
         # Define Table of Contents
         book.toc = (epub.Link('intro.xhtml', 'Introduction', 'intro'),
