@@ -88,9 +88,10 @@ def get_chapter(url):
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
     chapterfile = "{}.xhtml".format(chaptertitle)
     for i in range(1, pages+1):
-        print("Working on: {}{}{}".format(url, "/page/", i))
+        page_url = url + "/page/" + str(i)
+        print("Working on: " + page_url)
         text.append('<div class="page">\n')
-        for j in get_page("{}{}{}".format(url, "/page/", i)):
+        for j in get_page(page_url):
             text.append(j.prettify())
         text.append('</div>\n')
     chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
