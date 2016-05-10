@@ -88,7 +88,7 @@ def get_chapter(url):
     print("Pages in this chapter: {}".format(pages))
     text = []
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
-    chapterfile = "{}.xhtml".format(chaptertitle)
+    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-"))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
         print("Working on: " + page_url)
