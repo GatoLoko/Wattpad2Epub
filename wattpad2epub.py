@@ -60,7 +60,9 @@ def get_html(url):
             req = urllib.request.Request(url)
             req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
             request = urllib.request.urlopen(req)
-            soup = BeautifulSoup(request.read(), "html.parser")
+            # html.parser generates problems, I could fix them, but switching to
+            # lxml is easier and faster
+            soup = BeautifulSoup(request.read(), "lxml")
             return soup
         except socket.timeout:
             tries -= 1
