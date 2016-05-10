@@ -81,7 +81,7 @@ def get_page(text_url):
 def get_chapter(url):
     pagehtml = get_html(url)
     print("Current url: " + url)
-    pages_re = re.compile('.*"pages":([0-9]*),.*', re.IGNORECASE)
+    pages_re = re.compile('"pages":([0-9]*),', re.IGNORECASE)
     pages = int(pages_re.search(str(pagehtml)).group(1))
     print("Pages in this chapter: {}".format(pages))
     text = []
