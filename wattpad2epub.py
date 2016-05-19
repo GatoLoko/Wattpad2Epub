@@ -49,7 +49,10 @@ else:
 
 # Sample book URL: http://www.wattpad.com/story/12345678-title-here
 # Sample first page URL: http://www.wattpad.com/91011121-title-here
-initial_url = 'http://www.wattpad.com/story/11561902-rainbow-reflection'
+
+# The following URL's are for testing purposes, overriding address provided
+# from command line.
+# initial_url = 'http://www.wattpad.com/story/11561902-rainbow-reflection'
 # initial_url = 'http://www.wattpad.com/story/27198468-sholan-alliance-bk-3'
 
 
