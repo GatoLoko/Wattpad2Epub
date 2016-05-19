@@ -24,6 +24,7 @@ Created on Wed Feb 18 22:26:23 2015
 
 import sys
 import os
+import argparse
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -33,6 +34,7 @@ from ebooklib import epub
 import re
 from string import Template
 
+debug = False
 
 # timeout in seconds
 timeout = 10
@@ -105,7 +107,7 @@ def get_chapter(url):
     return chapter
 
 
-if __name__ == "__main__":
+def get_book(initial_url):
     base_url = 'http://www.wattpad.com'
     html = get_html(initial_url)
 
@@ -190,3 +192,22 @@ if __name__ == "__main__":
         epub.write_epub(epubfile, book, {})
     else:
         print("Epub file already exists, not updating")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Download stories from wattpad.com and store them as epub.",
+        epilog="This script doesn't support updating an existing epub with " +
+               "new chapters",
+        argument_default=argparse.SUPPRESS)
+
+    parser.add_argument('initial_url', metavar='initial_url', type=str, nargs=1,
+                        help="Book's URL.")
+    parser.add_argument('-d', '--debug', action='store_true', default=False,
+                        help='print debug messages to stdout')
+
+    args = parser.parse_args()
+    if args.debug:
+        debug = True
+        print(args)
+
+    get_book(args.initial_url[0])
