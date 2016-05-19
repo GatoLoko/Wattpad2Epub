@@ -22,7 +22,6 @@ Created on Wed Feb 18 22:26:23 2015
 @author: gatoloko
 """
 
-import sys
 import os
 import argparse
 import urllib.request
@@ -39,15 +38,6 @@ debug = False
 # timeout in seconds
 timeout = 10
 socket.setdefaulttimeout(timeout)
-
-
-# Get the page url we want to process
-# initial_url = sys.argv[1]
-if len(sys.argv) > 1:
-    initial_url = sys.argv[1]
-else:
-    print("You must provide a story URL")
-    quit(os.EX_USAGE)
 
 # Sample book URL: http://www.wattpad.com/story/12345678-title-here
 # Sample first page URL: http://www.wattpad.com/91011121-title-here
