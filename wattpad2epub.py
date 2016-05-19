@@ -42,8 +42,14 @@ socket.setdefaulttimeout(timeout)
 # Sample book URL: http://www.wattpad.com/story/12345678-title-here
 # Sample first page URL: http://www.wattpad.com/91011121-title-here
 
-# The following URL's are for testing purposes, overriding address provided
-# from command line.
+# The following URL's are for testing purposes. All of them have unique
+# situations that make them worth testing (e.g. "The Arwain chronicles" book
+# has some weirdly formated chapters that make wattpad's android app choke
+# and take forever loading them)
+
+# Since the change in arguments parsing, uncommenting this lines has no
+# effect, and remain here as a reminder.
+# initial_url = 'http://www.wattpad.com/story/53207033-the-arwain-chronicles'
 # initial_url = 'http://www.wattpad.com/story/11561902-rainbow-reflection'
 # initial_url = 'http://www.wattpad.com/story/27198468-sholan-alliance-bk-3'
 
