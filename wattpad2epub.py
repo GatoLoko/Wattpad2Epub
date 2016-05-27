@@ -153,6 +153,12 @@ def get_book(initial_url):
     for label in html.select('div.tags a'):
         if '/' in label['href']:
             labels.append(label.get_text())
+    if debug:
+        print("Author: " + author)
+        print("Title: " + title)
+        print("Description: " + description)
+        print("Cover: " + coverurl)
+        print("Labels:" + " ".join(labels))
 
     print("'{}' by {}".format(title, author))
     # print(next_page_url)
