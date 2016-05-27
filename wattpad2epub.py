@@ -222,8 +222,7 @@ def get_book(initial_url):
         if cover:
             myspine.append('cover')
         myspine.extend([intro_ch, 'nav'])
-        for i in allchapters:
-            myspine.append(i)
+        myspine.extend(allchapters)
         book.spine = myspine
 
         # Write the epub to file
