@@ -69,6 +69,43 @@ def get_html(url):
             tries -= 1
 
 
+def get_cover(cover_url):
+    print(cover_url)
+    tries = 5
+    while tries > 0:
+        try:
+            req = urllib.request.Request(cover_url)
+            req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
+            request = urllib.request.urlopen(req)
+            temp = request.read()
+            with open('cover.jpg', 'wb') as f:
+                f.write(temp)
+            tries == 0
+            # break
+            return 1
+        except Exception as error:
+            tries -= 1
+            print("Can't retrieve the cover")
+            print(error)
+            return 0
+
+
+###############################################################################
+# TODO: Remove this block when the fix is released
+# Something goes wrong when adding an image as a cover, and we need to work
+# around it by replacing the get_template function with our own that takes care
+# of properly encoding the template as utf8.
+# There is a bug reported, and this will become unnecesary once the fix gets
+# into the distributions.
+original_get_template = epub.EpubBook.get_template
+
+
+def new_get_template(*args, **kwargs):
+        return original_get_template(*args, **kwargs).encode(encoding='utf8')
+epub.EpubBook.get_template = new_get_template
+###############################################################################
+
+
 def clean_text(text):
     text = re.sub(r'<p data-p-id=".{32}">', '<p>', text)
     # text = re.sub(r'&nbsp;', '', text)
@@ -133,11 +170,13 @@ def get_book(initial_url):
         # book.add_metadata('DC', 'subject', 'Wattpad')
         for label in labels:
             book.add_metadata('DC', 'subject', label)
-        # TODO: add a cover without breaking everything
-        # urllib.request.urlretrieve(coverurl, "cover.jpg")
-        # img = open("cover.jpg", "r", encoding="utf-8")
-        # book.set_cover('cover.jpg', img)
-        # os.remove("cover.jpg")
+        # Add a cover if it's available
+        if get_cover(coverurl):
+            cover = True
+            book.set_cover(file_name='cover.jpg', content=open('cover.jpg',
+                                                               'rb').read(),
+                           create_page=True)
+            os.remove('cover.jpg')
 
         # Define CSS style
         nav_css = epub.EpubItem(uid="style_nav", file_name="Style/nav.css",
@@ -179,7 +218,10 @@ def get_book(initial_url):
         book.add_item(epub.EpubNav())
 
         # Basic spine
-        myspine = [intro_ch, 'nav']
+        myspine = []
+        if cover:
+            myspine.append('cover')
+        myspine.extend([intro_ch, 'nav'])
         for i in allchapters:
             myspine.append(i)
         book.spine = myspine
