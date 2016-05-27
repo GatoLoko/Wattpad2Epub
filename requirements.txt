@@ -1,2 +1,2 @@
-argparse
 bs4
+ebooklib
