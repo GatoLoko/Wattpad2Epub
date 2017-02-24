@@ -170,7 +170,8 @@ def get_book(initial_url):
     epubfile = "{} - {}.epub".format(title, author)
     if not os.path.exists(epubfile):
         book = epub.EpubBook()
-        book.set_identifier("wattpad.com/uid=%s" % initial_url.split('/')[-1])
+        book.set_identifier("wattpad.com//%s/%s" % (initial_url.split('/')[-1],
+                                                    len(chapterlist)))
         book.set_title(title)
         book.add_author(author)
         book.set_language('en')
