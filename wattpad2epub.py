@@ -56,17 +56,18 @@ socket.setdefaulttimeout(timeout)
 
 def get_html(url):
     tries = 5
+    req = urllib.request.Request(url)
+    req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
     while tries > 0:
         try:
-            req = urllib.request.Request(url)
-            req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
             request = urllib.request.urlopen(req)
-            # html.parser generates problems, I could fix them, but switching
-            # to lxml is easier and faster
-            soup = BeautifulSoup(request.read(), "lxml")
-            return soup
+            tries = 0
         except socket.timeout:
             tries -= 1
+    # html.parser generates problems, I could fix them, but switching to lxml
+    # is easier and faster
+    soup = BeautifulSoup(request.read(), "lxml")
+    return soup
 
 
 def get_cover(cover_url):
