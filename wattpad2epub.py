@@ -29,7 +29,7 @@ import urllib.parse
 import urllib.error
 from bs4 import BeautifulSoup
 import socket
-from ebooklib import epub
+from ebooklib import epub, VERSION
 import re
 from string import Template
 
@@ -92,18 +92,18 @@ def get_cover(cover_url):
 
 
 ###############################################################################
-# TODO: Remove this block when the fix is released
+# TODO: Remove this block when appropriate
+# Workaround for bug in ebooklib 0.15.
 # Something goes wrong when adding an image as a cover, and we need to work
 # around it by replacing the get_template function with our own that takes care
 # of properly encoding the template as utf8.
-# There is a bug reported, and this will become unnecesary once the fix gets
-# into the distributions.
-original_get_template = epub.EpubBook.get_template
+if VERSION[1] == 15:
+    original_get_template = epub.EpubBook.get_template
 
-
-def new_get_template(*args, **kwargs):
+    def new_get_template(*args, **kwargs):
         return original_get_template(*args, **kwargs).encode(encoding='utf8')
-epub.EpubBook.get_template = new_get_template
+
+    epub.EpubBook.get_template = new_get_template
 ###############################################################################
 
 
