@@ -168,7 +168,18 @@ def get_book(initial_url):
     chapterlist_url = "{}{}".format(initial_url, "/parts")
     chapterlist = get_html(chapterlist_url).select('ul.table-of-contents a')
 
-    epubfile = "{} - {}.epub".format(title, author)
+    # Remove from the file name those characters that Microsoft does NOT allow.
+    # This also affects the FAT filesystem used on most phone/tablet sdcards
+    # and other devices used to read epub files.
+    # Disallowed characters: \/:*?"<>|^
+    filename = title
+    for i in ['\\', '/', ':', '*', '?', '"', '<', '>', '|', '^']:
+        if i in filename:
+            filename = filename.replace(i, '')
+    # Apple products disallow files starting with dot
+    filename = filename.lstrip('.')
+
+    epubfile = "{} - {}.epub".format(filename, author)
     if not os.path.exists(epubfile):
         book = epub.EpubBook()
         book.set_identifier("wattpad.com//%s/%s" % (initial_url.split('/')[-1],
