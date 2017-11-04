@@ -29,6 +29,13 @@ You can run the script doing
 
 `your_url_argument` should be your story url, like this one: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
 
+## Output
+
+After the script finished, you will have your epub file in ...
+TODO
+
+## On Wattpad's API
+
 I've made some quick & dirty tests using the official Wattpad API, and most
 probably made a few mistakes, but here is what I've found:
 
