@@ -16,7 +16,8 @@ reading and self publication.
 ## Requeriments
 
 You will need python3. You can install it with brew in osx.
-Then you can install the requirements as
+For our main script you will need BeatifulSoup4 and ebooklib,
+you can install them with:
 ```
 pip3 install BeautifulSoup4
 pip3 install ebooklib
@@ -24,7 +25,7 @@ pip3 install ebooklib
 
 ## Running it
 
-You can run the script doing
+You can run the python script doing:
 `python3 wattpad2epub.py your_url_argument`
 
 `your_url_argument` should be your story url, like this one: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
