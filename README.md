@@ -32,8 +32,9 @@ You can run the python script doing:
 
 ## Output
 
-After the script finished, you will have your epub file in ...
-TODO
+After the script finished, you will have your epub file inside the root folder, and
+it will be named in the format `Title - Author .epub`, for example:
+`The Arwain Chronicles Book I - IceheartPhoenix.epub`
 
 ## On Wattpad's API
 
