@@ -13,6 +13,29 @@ online while reading, and use wattpad's application to access the stories.
 Having those stories in epub format allows storing them as a backup, offline
 reading and self publication.
 
+## Requeriments
+
+You will need python3. You can install it with brew in osx.
+For our main script you will need BeatifulSoup4 and ebooklib,
+you can install them with:
+```
+pip3 install BeautifulSoup4
+pip3 install ebooklib
+```
+
+## Running it
+
+You can run the python script doing:
+`python3 wattpad2epub.py your_url_argument`
+
+> `your_url_argument` should be your story url, for example: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
+
+## Output
+
+After the script finished, you will have your epub file inside the root folder, and
+it will be named in the format `Title - Author .epub`, for example:
+`The Arwain Chronicles Book I - IceheartPhoenix.epub`
+
 ## On Wattpad's API
 
 I've made some quick & dirty tests using the official Wattpad API, and most
