@@ -252,6 +252,7 @@ def get_book(initial_url):
     else:
         print("Epub file already exists, not updating")
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Download stories from wattpad.com and store them as"
