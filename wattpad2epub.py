@@ -58,6 +58,8 @@ def get_html(url):
     tries = 5
     req = urllib.request.Request(url)
     req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
+    # Add DoNotTrack header, do the right thing even if nobody cares
+    req.add_header('DNT', '1')
     while tries > 0:
         try:
             request = urllib.request.urlopen(req)
