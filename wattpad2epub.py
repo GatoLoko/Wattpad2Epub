@@ -66,6 +66,12 @@ def get_html(url):
             tries = 0
         except socket.timeout:
             tries -= 1
+        except urllib.error.HTTPError as e:
+            if debug:
+                raise
+            print("HTTP Error " + str(e.code) + ": " + e.reason)
+            print("Aborting...")
+            exit()
     # html.parser generates problems, I could fix them, but switching to lxml
     # is easier and faster
     soup = BeautifulSoup(request.read(), "lxml")
