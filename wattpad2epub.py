@@ -65,6 +65,8 @@ def get_html(url):
             request = urllib.request.urlopen(req)
             tries = 0
         except socket.timeout:
+            if debug:
+                raise
             tries -= 1
         except urllib.error.HTTPError as e:
             if debug:
