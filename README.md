@@ -54,8 +54,8 @@ As of Dec. 2018m the API has been split into two part, a "public API" and a
   - Has been moved behind a login for which the wattpad user account doesnt
     work and there is nothing to help you find out how to gain access or
     whether it's at all possible. (2018)
-  - Isn't publicized. Found it through a [comment on Stack Overflow]
-    (https://stackoverflow.com/questions/27070973/does-wattpad-have-an-api),
+  - Isn't publicized. Found it through a
+    [comment on Stack Overflow](https://stackoverflow.com/questions/27070973/does-wattpad-have-an-api),
     which probably means it's not meant for external applications use. (2018)
   - When the documentation for the "private API" was accesible it was
     incomplete, with some essential parts missing. (2015)
