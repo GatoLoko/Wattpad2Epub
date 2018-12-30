@@ -38,22 +38,35 @@ it will be named in the format `Title - Author .epub`, for example:
 
 ## On Wattpad's API
 
-I've made some quick & dirty tests using the official Wattpad API, and most
-probably made a few mistakes, but here is what I've found:
+As of Dec. 2018m the API has been split into two part, a "public API" and a
+"private API".
 
-  - It's in beta state, wich means it may still change
-  - The documentation seems to be missing some parts
-  - There were some server failures during my tests
-  - Couldn't find a reliable way to retrieve a full story text
-  - Needed double authentication (application + user)
+[Public API](https://www.wattpad.com/developer/docs/api):
 
-Based on this findings, I've chosen to keep parsing the html, at least for a
-now, for the following reasons:
+  - Has been in beta state since 2015, and they warn that it's subject to
+    change, which makes it unreliable. (2018)
+  - Does NOT provide a way to retrieve story or chapter text, making it
+    unsuitable for Wattpad2Epub purposes. (2018)
+  - Needs double authentication (application + user). (2015-2018)
 
-  - Ability to retrieve full story text (essential)
-  - No user authentication needed (important)
-  - No application autentication
+[Private API](http://developer.wattpad.com/docs/api):
 
-If you can figure out a way to do this using [Wattpad's
-api](https://developer.wattpad.com/docs/api), I'm open to suggestions and/or
-patches.
+  - Has been moved behind a login for which the wattpad user account doesnt
+    work and there is nothing to help you find out how to gain access or
+    whether it's at all possible. (2018)
+  - Isn't publicized. Found it through a [comment on Stack Overflow]
+    (https://stackoverflow.com/questions/27070973/does-wattpad-have-an-api),
+    which probably means it's not meant for external applications use. (2018)
+  - When the documentation for the "private API" was accesible it was
+    incomplete, with some essential parts missing. (2015)
+  - There were some server failures during my tests. (2015)
+  - Couldn't find a reliable way to retrieve a full story text. (2015)
+  - Needs double authentication (application + user). (2015-2018)
+
+Based on all this, I've given up on using the API at all, and chosen to keep
+parsing the html because it allows us to:
+
+  - Retrieve full story text (essential)
+  - Not require the user to authenticate (important)
+  - Not require application autentication (nice to have)
+
