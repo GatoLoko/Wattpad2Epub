@@ -171,7 +171,7 @@ def get_book(initial_url):
         print("Cover: " + coverurl)
         print("Labels:" + " ".join(labels))
 
-    print("'{}' by {}".format(title, author))
+    print("'{}' by {}".format(title, author).encode("utf-8"))
     # print(next_page_url)
 
     # Get list of chapters
@@ -237,7 +237,7 @@ def get_book(initial_url):
         for item in chapterlist:
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
-                print("Working on: {}".format(chaptertitle))
+                print("Working on: {}".format(chaptertitle).encode("utf-8"))
                 chapter = get_chapter("{}{}".format(base_url, item['href']))
                 book.add_item(chapter)
                 allchapters.append(chapter)
