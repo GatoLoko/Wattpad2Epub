@@ -68,6 +68,16 @@ def get_html(url):
             if debug:
                 raise
             tries -= 1
+        except socket.timeout:
+            if debug:
+                raise
+            tries -= 1
+        except urllib.error.URLError as e:
+            if debug:
+                raise
+            print("URL Error " + str(e.code) + ": " + e.reason)
+            print("Aborting...")
+            exit()
         except urllib.error.HTTPError as e:
             if debug:
                 raise
