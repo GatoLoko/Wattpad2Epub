@@ -26,7 +26,7 @@ pip3 install ebooklib
 ## Running it
 
 You can run the python script doing:
-`python3 wattpad2epub.py your_url_argument`
+`python3 wattpad2epub.py your_url_argument`. If it doesn't work, try to use `python wattpad2epub.py your_url_argument`
 
 > `your_url_argument` should be your story url, for example: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
 
