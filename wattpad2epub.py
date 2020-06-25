@@ -151,13 +151,13 @@ def get_chapter(url):
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
         print("Working on: " + page_url)
-        text.append('<div class="page">\n')
+        text.append('<div class="page"><p>\n')
         for j in get_page(page_url):
             text.append(j.prettify())
-        text.append('</div>\n')
+        text.append('</p></div>\n')
     chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
                             lang='en')
-    chapter.content = "".join(text)
+    chapter.content = "".join(text).replace('pre>', 'p>')
     return chapter
 
 
