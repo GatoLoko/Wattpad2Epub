@@ -199,7 +199,18 @@ def get_book(initial_url):
     # Apple products disallow files starting with dot
     filename = filename.lstrip('.')
 
-    epubfile = "{} - {}.epub".format(filename, author)
+    epub_filename = "{} - {}.epub".format(filename, author)
+    epub_folder = args.dir
+
+    if not os.path.exists(epub_folder):
+        os.makedirs(epub_folder)
+        if debug:
+            print(f"Directory \"{epub_folder}\" does not exist. Creating directory.")
+
+    epubfile = os.path.join(epub_folder, epub_filename)
+    if debug:
+        print(f"epubfile: \"{epubfile}\"")
+
     if not os.path.exists(epubfile):
         book = epub.EpubBook()
         book.set_identifier("wattpad.com//%s/%s" % (initial_url.split('/')[-1],
@@ -286,6 +297,7 @@ if __name__ == "__main__":
                         nargs=1, help="Book's URL.")
     parser.add_argument('-d', '--debug', action='store_true', default=False,
                         help='print debug messages to stdout')
+    parser.add_argument('-f', '--dir', default='Books', help="Directory to store the epub's.")
 
     args = parser.parse_args()
     if args.debug:
