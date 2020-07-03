@@ -35,6 +35,7 @@ from string import Template
 
 debug = False
 
+chapterCount = 0                
 # timeout in seconds
 timeout = 10
 socket.setdefaulttimeout(timeout)
@@ -140,6 +141,8 @@ def get_page(text_url):
 
 
 def get_chapter(url):
+    global chapterCount
+    chapterCount = chapterCount + 1
     pagehtml = get_html(url)
     print("Current url: " + url)
     pages_re = re.compile('"pages":([0-9]*),', re.IGNORECASE)
@@ -147,7 +150,7 @@ def get_chapter(url):
     print("Pages in this chapter: {}".format(pages))
     text = []
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
-    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-"))
+    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" + str(chapterCount))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
         print("Working on: " + page_url)
