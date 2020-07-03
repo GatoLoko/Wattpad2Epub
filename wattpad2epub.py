@@ -158,6 +158,8 @@ def get_chapter(url):
     chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
                             lang='en')
     chapter.content = "".join(text)
+    chapter.content = chapter.content.replace("<pre>","")
+    chapter.content = chapter.content.replace("</pre>","")
     return chapter
 
 
