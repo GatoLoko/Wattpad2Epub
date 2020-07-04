@@ -136,7 +136,7 @@ def clean_text(text):
 
 
 def get_page(text_url):
-    text = get_html(text_url).select('pre')
+    text = get_html(text_url).select_one('pre').findChildren()
     return text
 
 
