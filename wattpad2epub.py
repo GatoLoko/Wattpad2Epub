@@ -40,6 +40,13 @@ chapterCount = 0
 timeout = 10
 socket.setdefaulttimeout(timeout)
 
+if os.path.islink(__file__):
+    mypath = os.path.dirname(os.path.realpath(__file__))
+else:
+    mypath = os.path.dirname(os.path.abspath(__file__))
+# print(mypath)
+
+
 # Sample book URL: http://www.wattpad.com/story/12345678-title-here
 # Sample first page URL: http://www.wattpad.com/91011121-title-here
 
@@ -223,12 +230,12 @@ def get_book(initial_url):
             os.remove('cover.jpg')
 
         # Define CSS style
-        css_path = os.path.join("CSS", "nav.css")
+        css_path = os.path.join(mypath, "CSS", "nav.css")
         nav_css = epub.EpubItem(uid="style_nav", file_name="Style/nav.css",
                                 media_type="text/css",
                                 content=open(css_path).read())
 
-        css_path = os.path.join("CSS", "body.css")
+        css_path = os.path.join(mypath, "CSS", "body.css")
         body_css = epub.EpubItem(uid="style_body", file_name="Style/body.css",
                                  media_type="text/css",
                                  content=open(css_path).read())
@@ -239,7 +246,7 @@ def get_book(initial_url):
         # Introduction
         intro_ch = epub.EpubHtml(title='Introduction', file_name='intro.xhtml')
         intro_ch.add_item(body_css)
-        template_path = os.path.join("HTML", "intro.xhtml")
+        template_path = os.path.join(mypath, "HTML", "intro.xhtml")
         intro_template = Template(open(template_path).read())
         intro_html = intro_template.substitute(title=title, author=author,
                                                url=initial_url,
