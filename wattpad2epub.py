@@ -34,6 +34,7 @@ import re
 from string import Template
 
 debug = False
+doimageembedding = True
 
 chapterCount = 0                
 # timeout in seconds
@@ -146,6 +147,23 @@ def get_page(text_url):
     text = get_html(text_url).select_one('pre').findChildren()
     return text
 
+def clean_up_chapter(content):
+    #remove image duplicates
+    imagelocations=[m.start() for m in re.finditer('\\<img', content)]
+    imagestrings=[]
+    for x in range(0,len(imagelocations)):
+        stringstart=imagelocations[x]
+        stringend=content.find(">",stringstart)+1
+        imagestrings.append(content[stringstart:stringend])
+    imagestringsdict={}
+    for x in range(0,len(imagestrings)):
+        imagestringsdict[imagestrings[x]]=imagestringsdict.get(imagestrings[x],0)+1
+    for x in imagestringsdict:
+        content=content.replace(x,"",imagestringsdict[x]-1)
+    content=content.replace("Oops! This image does not follow our content guidelines. To continue publishing, please remove it or upload a different image.","")
+        
+    return content
+    
 
 def get_chapter(url):
     global chapterCount
@@ -157,7 +175,7 @@ def get_chapter(url):
     print("Pages in this chapter: {}".format(pages))
     text = []
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
-    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" + str(chapterCount))
+    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-").replace("/", "-").replace("\\", "-").replace(":", "-").replace("<", "-").replace(">", "-").replace("?", "-").replace("*", "-").replace("\"", "-").replace("|", "-") + "-" + str(chapterCount))
     text.append("<h2>{}</h2>\n".format(chaptertitle))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
@@ -168,11 +186,81 @@ def get_chapter(url):
         text.append('</div>\n')
     chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
                             lang='en')
-    chapter.content = "".join(text)
+    chapter.content = clean_up_chapter("".join(text))
     return chapter
 
 
+def get_url(url):
+    tries = 5
+    while tries > 0:
+        try:
+            req = urllib.request.Request(url)
+            req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
+            request = urllib.request.urlopen(req)
+            return request
+        except Exception as error:
+            tries -= 1
+            print("Can't retrieve: "+url)
+            print(error)
+            return 0
+
+
+finishedimages={}
+imageUID=1
+def embed_images(chapter, book):
+    global finishedimages
+    global imageUID
+    content = chapter.content.split(sep='src="')
+    output = content[0]
+    for x in range(1, len(content)):
+        imageurl = content[x][:content[x].find('"')]
+        request = get_url(imageurl)
+        if request != 0:
+            headers = request.info()
+            mediatype = headers["Content-Type"]
+            extension = ""
+            if mediatype == "text/plain":
+                extension = ".txt"
+            if mediatype == "text/css":
+                extension = ".css"
+            if mediatype == "image/png":
+                extension = ".png"
+            if mediatype == "image/jpeg":
+                extension = ".jpg"
+            if mediatype == "image/webp":
+                extension = ".webp"
+            if mediatype == "image/bmp":
+                extension = ".bmp"
+            if mediatype == "image/gif":
+                extension = ".gif"
+            if mediatype == "image/svg+xml":
+                extension = ".svg"
+            if mediatype == "image/tiff":
+                extension = ".tiff"
+            #imagefile = "images/" + urllib.parse.quote(imageurl, safe='') + extension
+            
+            if imageurl not in finishedimages:
+                imagefile = "images/" + str(imageUID) + extension
+                item = epub.EpubItem(uid=imagefile, file_name=imagefile,
+                                    media_type=mediatype,
+                                    content=request.read())
+                book.add_item(item)
+                finishedimages[imageurl] = str(imageUID)
+                imageUID+=1
+                print("embedded "+mediatype+" file")
+            else:
+                imagefile = "images/" + finishedimages[imageurl] + extension
+                
+        else:
+            imagefile = imageurl
+        sectionoutput = 'src="'+imagefile+content[x][content[x].find('"'):]
+        output = output+sectionoutput
+    chapter.content=output
+
+
 def get_book(initial_url):
+    global doimageembedding
+    
     base_url = 'http://www.wattpad.com'
     html = get_html(initial_url)
 
@@ -239,9 +327,14 @@ def get_book(initial_url):
         body_css = epub.EpubItem(uid="style_body", file_name="Style/body.css",
                                  media_type="text/css",
                                  content=open(css_path).read())
+        css_path = os.path.join(mypath, "CSS", "include.css")
+        include_css = epub.EpubItem(uid="style_include", file_name="Style/include.css",
+                                 media_type="text/css",
+                                 content=open(css_path).read())
         # Add CSS file
         book.add_item(nav_css)
         book.add_item(body_css)
+        book.add_item(include_css)
 
         # Introduction
         intro_ch = epub.EpubHtml(title='Introduction', file_name='intro.xhtml')
@@ -261,6 +354,9 @@ def get_book(initial_url):
                 print("Working on: {}".format(chaptertitle).encode("utf-8"))
                 chapter = get_chapter("{}{}".format(base_url, item['href']))
                 book.add_item(chapter)
+                chapter.add_item(include_css)
+                if doimageembedding:
+                    embed_images(chapter,book)
                 allchapters.append(chapter)
 
         # Define Table of Contents
@@ -297,10 +393,14 @@ if __name__ == "__main__":
                         nargs=1, help="Book's URL.")
     parser.add_argument('-d', '--debug', action='store_true', default=False,
                         help='print debug messages to stdout')
+                        
+    parser.add_argument('-n', '--no-embed', action='store_true', default=False,
+                        help='disable image embeding and use external links')
 
     args = parser.parse_args()
     if args.debug:
         debug = True
         print(args)
-
+    if args.no_embed:
+        doimageembedding = False
     get_book(args.initial_url[0])
