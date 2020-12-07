@@ -158,7 +158,6 @@ def get_chapter(url):
     text.append("<h2>{}</h2>\n".format(chaptertitle))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
-        print("Working on: " + page_url)
         text.append('<div class="page">\n')
         for j in get_page(page_url):
             text.append(j.prettify())
@@ -245,10 +244,11 @@ def get_book(initial_url):
         book.add_item(intro_ch)
 
         allchapters = []
+        progress_increments = 100/len(chapterlist)
         for item in chapterlist:
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
-                print("Working on: {}".format(chaptertitle).encode("utf-8"))
+                progress["value"] += progress_increments
                 chapter = get_chapter("{}{}".format(base_url, item['href']))
                 book.add_item(chapter)
                 allchapters.append(chapter)
@@ -297,14 +297,17 @@ if __name__ == "__main__":
             root.after(15, check_thread)
         else:
             submit_button.config(state=NORMAL)
+            progress["value"] = 0
             thread = None
 
     root = Tk()
     root.title("Wattpad2Epub")
     root.resizable(0,0)
-    url_entry = ttk.Entry(root)
+    url_entry = ttk.Entry(root, width=50)
     submit_button = ttk.Button(root, text="Submit", command=start_download)
-    url_entry.grid(row=0, column=0, columnspan=3)
-    submit_button.grid(row=1, column=1)
+    progress = ttk.Progressbar(root, orient=HORIZONTAL, mode="determinate")
+    url_entry.grid(row=0, column=0, columnspan=3, sticky="we", padx="10", pady="3")
+    progress.grid(row=1, column=0, columnspan=3, sticky="we", padx="10", pady="3")
+    submit_button.grid(row=2, column=1)
 
     root.mainloop()
