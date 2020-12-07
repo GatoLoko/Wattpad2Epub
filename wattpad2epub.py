@@ -27,13 +27,16 @@ import argparse
 import urllib.request
 import urllib.parse
 import urllib.error
+from tkinter import *
+from tkinter import ttk
+from tkinter.messagebox import showinfo, showerror
+from threading import Thread
+from time import sleep
 from bs4 import BeautifulSoup
 import socket
 from ebooklib import epub, VERSION
 import re
 from string import Template
-
-debug = False
 
 chapterCount = 0                
 # timeout in seconds
@@ -64,7 +67,11 @@ else:
 
 def get_html(url):
     tries = 5
-    req = urllib.request.Request(url)
+    try:
+        req = urllib.request.Request(url)
+    except ValueError:
+        showerror("Error", "Invalid URL: " + url)
+        return
     req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
     # Add DoNotTrack header, do the right thing even if nobody cares
     req.add_header('DNT', '1')
@@ -73,25 +80,14 @@ def get_html(url):
             request = urllib.request.urlopen(req)
             tries = 0
         except socket.timeout:
-            if debug:
-                raise
             tries -= 1
-        except socket.timeout:
-            if debug:
-                raise
             tries -= 1
         except urllib.error.URLError as e:
-            if debug:
-                raise
-            print("URL Error " + str(e.code) + ": " + e.reason)
-            print("Aborting...")
-            exit()
+            showerror("Url Error", str(e) + ": " + e.reason + "\nAborting...")
+            return
         except urllib.error.HTTPError as e:
-            if debug:
-                raise
-            print("HTTP Error " + str(e.code) + ": " + e.reason)
-            print("Aborting...")
-            exit()
+            showerror("HTTP Error ", str(e.code) + ": " + e.reason + "\nAborting...")
+            return
     # html.parser generates problems, I could fix them, but switching to lxml
     # is easier and faster
     soup = BeautifulSoup(request.read(), "lxml")
@@ -99,11 +95,14 @@ def get_html(url):
 
 
 def get_cover(cover_url):
-    print(cover_url)
     tries = 5
     while tries > 0:
         try:
-            req = urllib.request.Request(cover_url)
+            try:
+                req = urllib.request.Request(cover_url)
+            except ValueError:
+                showerror("Error", "Invalid URL: " + cover_url)
+                return
             req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
             request = urllib.request.urlopen(req)
             temp = request.read()
@@ -114,7 +113,7 @@ def get_cover(cover_url):
             return 1
         except Exception as error:
             tries -= 1
-            print("Can't retrieve the cover")
+            showerror("Can't retrieve the cover")
             print(error)
             return 0
 
@@ -151,10 +150,8 @@ def get_chapter(url):
     global chapterCount
     chapterCount = chapterCount + 1
     pagehtml = get_html(url)
-    print("Current url: " + url)
     pages_re = re.compile('"pages":([0-9]*),', re.IGNORECASE)
     pages = int(pages_re.search(str(pagehtml)).group(1))
-    print("Pages in this chapter: {}".format(pages))
     text = []
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
     chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" + str(chapterCount))
@@ -185,14 +182,7 @@ def get_book(initial_url):
     for label in html.select('div.tags a'):
         if '/' in label['href']:
             labels.append(label.get_text())
-    if debug:
-        print("Author: " + author)
-        print("Title: " + title)
-        print("Description: " + description)
-        print("Cover: " + coverurl)
-        print("Labels:" + " ".join(labels))
 
-    print("'{}' by {}".format(title, author).encode("utf-8"))
     # print(next_page_url)
 
     # Get list of chapters
@@ -281,26 +271,40 @@ def get_book(initial_url):
 
         # Write the epub to file
         epub.write_epub(epubfile, book, {})
+
+        # Show done
+        showinfo("Completed", "Book {} finished downloading.".format(title))
     else:
-        print("Epub file already exists, not updating")
+        showerror("Already Exists", "Epub file already exists, not updating")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Download stories from wattpad.com and store them as"
-                    " epub.",
-        epilog="This script doesn't support updating an existing epub with new"
-               " chapters",
-        argument_default=argparse.SUPPRESS)
+    thread = None
 
-    parser.add_argument('initial_url', metavar='initial_url', type=str,
-                        nargs=1, help="Book's URL.")
-    parser.add_argument('-d', '--debug', action='store_true', default=False,
-                        help='print debug messages to stdout')
+    def start_download():
+        global thread
+        thread = Thread(target=lambda: get_book(url_entry.get()))
+        thread.daemon = True
+        submit_button.config(state=DISABLED)
+        thread.start()
+        root.after(15, check_thread)
 
-    args = parser.parse_args()
-    if args.debug:
-        debug = True
-        print(args)
+    def check_thread():
+        global thread
+        if thread is None:
+            return
+        elif thread.is_alive():
+            root.after(15, check_thread)
+        else:
+            submit_button.config(state=NORMAL)
+            thread = None
 
-    get_book(args.initial_url[0])
+    root = Tk()
+    root.title("Wattpad2Epub")
+    root.resizable(0,0)
+    url_entry = ttk.Entry(root)
+    submit_button = ttk.Button(root, text="Submit", command=start_download)
+    url_entry.grid(row=0, column=0, columnspan=3)
+    submit_button.grid(row=1, column=1)
+
+    root.mainloop()
