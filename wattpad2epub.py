@@ -273,7 +273,7 @@ def get_book(initial_url):
         epub.write_epub(epubfile, book, {})
 
         # Show done
-        showinfo("Completed", "Book {} finished downloading.".format(title))
+        showinfo("Completed", "Book \"{}\" finished downloading.".format(title))
     else:
         showerror("Already Exists", "Epub file already exists, not updating")
 
