@@ -113,8 +113,7 @@ def get_cover(cover_url):
             return 1
         except Exception as error:
             tries -= 1
-            showerror("Can't retrieve the cover")
-            print(error)
+            showerror("Can't retrieve the cover\n" + str(error))
             return 0
 
 
