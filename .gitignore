@@ -1,2 +1,6 @@
 # PyCharm files
 .idea/
+
+# Test/Epub Files
+*.epub
+**/*.epub
