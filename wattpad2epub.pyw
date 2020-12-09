@@ -295,6 +295,7 @@ if __name__ == "__main__":
             root.after(15, check_thread)
         else:
             submit_button.config(state=NORMAL)
+            url_entry.delete(0, "end")
             progress["value"] = 0
             thread = None
 
