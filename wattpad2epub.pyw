@@ -108,7 +108,6 @@ def get_cover(cover_url):
             temp = request.read()
             with open('cover.jpg', 'wb') as f:
                 f.write(temp)
-            tries == 0
             # break
             return 1
         except Exception as error:
