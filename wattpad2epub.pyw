@@ -285,7 +285,7 @@ if __name__ == "__main__":
         thread.daemon = True
         submit_button.config(state=DISABLED)
         thread.start()
-        root.after(15, check_thread)
+        root.after(5, check_thread)
 
     def check_thread():
         global thread
