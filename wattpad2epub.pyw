@@ -307,6 +307,6 @@ if __name__ == "__main__":
     progress = ttk.Progressbar(root, orient=HORIZONTAL, mode="determinate")
     url_entry.grid(row=0, column=0, columnspan=3, sticky="we", padx="10", pady="3")
     progress.grid(row=1, column=0, columnspan=3, sticky="we", padx="10", pady="3")
-    submit_button.grid(row=2, column=1)
+    submit_button.grid(row=2, column=1, pady="1")
 
     root.mainloop()
