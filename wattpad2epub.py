@@ -76,10 +76,6 @@ def get_html(url):
             if debug:
                 raise
             tries -= 1
-        except socket.timeout:
-            if debug:
-                raise
-            tries -= 1
         except urllib.error.URLError as e:
             if debug:
                 raise
@@ -109,8 +105,6 @@ def get_cover(cover_url):
             temp = request.read()
             with open('cover.jpg', 'wb') as f:
                 f.write(temp)
-            tries == 0
-            # break
             return 1
         except Exception as error:
             tries -= 1
