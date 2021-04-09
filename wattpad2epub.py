@@ -35,7 +35,7 @@ from string import Template
 
 debug = False
 
-chapterCount = 0                
+chapterCount = 0
 # timeout in seconds
 timeout = 10
 socket.setdefaulttimeout(timeout)
@@ -85,7 +85,7 @@ def get_html(url):
                 raise
             print("URL Error " + str(e.code) + ": " + e.reason)
             print("Aborting...")
-            exit()
+
         except urllib.error.HTTPError as e:
             if debug:
                 raise
@@ -175,12 +175,11 @@ def get_chapter(url):
 def get_book(initial_url):
     base_url = 'http://www.wattpad.com'
     html = get_html(initial_url)
-
     # Get basic book information
-    author = html.select('div.author-info strong a')[0].get_text()
-    title = html.select('h1')[0].get_text().strip()
-    description = html.select('h2.description')[0].get_text()
-    coverurl = html.select('div.cover.cover-lg img')[0]['src']
+    author = html.select('div.author-info__username')[0].get_text()
+    title = html.select('div.story-info__title')[0].get_text().strip()
+    description = html.select('pre.description-text')[0].get_text()
+    coverurl = html.select('div.story-cover img')[0]['src']
     labels = ['Wattpad']
     for label in html.select('div.tags a'):
         if '/' in label['href']:
@@ -196,8 +195,8 @@ def get_book(initial_url):
     # print(next_page_url)
 
     # Get list of chapters
-    chapterlist_url = "{}{}".format(initial_url, "/parts")
-    chapterlist = get_html(chapterlist_url).select('ul.table-of-contents a')
+    chapterlist_url =initial_url
+    chapterlist = get_html(chapterlist_url).select('.story-parts ul li a')
 
     # Remove from the file name those characters that Microsoft does NOT allow.
     # This also affects the FAT filesystem used on most phone/tablet sdcards
@@ -255,7 +254,11 @@ def get_book(initial_url):
         book.add_item(intro_ch)
 
         allchapters = []
+        print(len(chapterlist))
         for item in chapterlist:
+            print("==>")
+            print(item)
+            print("<==")
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
                 print("Working on: {}".format(chaptertitle).encode("utf-8"))
