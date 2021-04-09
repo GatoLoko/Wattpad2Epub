@@ -147,7 +147,7 @@ def get_page(text_url):
     return text
 
 
-def get_chapter(url):
+def get_chapter(url,theTitle):
     global chapterCount
     chapterCount = chapterCount + 1
     pagehtml = get_html(url)
@@ -158,7 +158,7 @@ def get_chapter(url):
     text = []
     chaptertitle = pagehtml.select('h2')[0].get_text().strip()
     chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" + str(chapterCount))
-    text.append("<h2>{}</h2>\n".format(chaptertitle))
+    text.append("<h2>{}</h2>\n".format(theTitle))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
         print("Working on: " + page_url)
@@ -166,7 +166,7 @@ def get_chapter(url):
         for j in get_page(page_url):
             text.append(j.prettify())
         text.append('</div>\n')
-    chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
+    chapter = epub.EpubHtml(title=theTitle, file_name=chapterfile,
                             lang='en')
     chapter.content = "".join(text)
     return chapter
@@ -196,7 +196,7 @@ def get_book(initial_url):
 
     # Get list of chapters
     chapterlist_url =initial_url
-    chapterlist = get_html(chapterlist_url).select('.story-parts ul li a')
+    chapterlist = get_html(chapterlist_url).select('.table-of-contents div.story-parts ul li a')
 
     # Remove from the file name those characters that Microsoft does NOT allow.
     # This also affects the FAT filesystem used on most phone/tablet sdcards
@@ -254,15 +254,11 @@ def get_book(initial_url):
         book.add_item(intro_ch)
 
         allchapters = []
-        print(len(chapterlist))
         for item in chapterlist:
-            print("==>")
-            print(item)
-            print("<==")
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
                 print("Working on: {}".format(chaptertitle).encode("utf-8"))
-                chapter = get_chapter("{}{}".format(base_url, item['href']))
+                chapter = get_chapter("{}{}".format(base_url, item['href']),chaptertitle)
                 book.add_item(chapter)
                 allchapters.append(chapter)
 
