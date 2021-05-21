@@ -22,23 +22,22 @@ Created on Wed Feb 18 22:26:23 2015
 @author: gatoloko
 """
 
-import os
 import argparse
-import urllib.request
-import urllib.parse
-import urllib.error
-from bs4 import BeautifulSoup
-import socket
-from ebooklib import epub, VERSION
+import os
+import sys
 import re
-from string import Template
+
+PROG_DIR = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(PROG_DIR, "libs"))
+try:
+    import gsweb
+    from gsepub import MyBook
+except ImportError:
+    raise
 
 debug = False
 
-chapterCount = 0                
-# timeout in seconds
-timeout = 10
-socket.setdefaulttimeout(timeout)
+chapterCount = 0
 
 if os.path.islink(__file__):
     mypath = os.path.dirname(os.path.realpath(__file__))
@@ -62,77 +61,17 @@ else:
 # initial_url = 'http://www.wattpad.com/story/27198468-sholan-alliance-bk-3'
 
 
-def get_html(url):
-    tries = 5
-    req = urllib.request.Request(url)
-    req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
-    # Add DoNotTrack header, do the right thing even if nobody cares
-    req.add_header('DNT', '1')
-    while tries > 0:
-        try:
-            request = urllib.request.urlopen(req)
-            tries = 0
-        except socket.timeout:
-            if debug:
-                raise
-            tries -= 1
-        except socket.timeout:
-            if debug:
-                raise
-            tries -= 1
-        except urllib.error.URLError as e:
-            if debug:
-                raise
-            print("URL Error " + str(e.code) + ": " + e.reason)
-            print("Aborting...")
-            exit()
-        except urllib.error.HTTPError as e:
-            if debug:
-                raise
-            print("HTTP Error " + str(e.code) + ": " + e.reason)
-            print("Aborting...")
-            exit()
-    # html.parser generates problems, I could fix them, but switching to lxml
-    # is easier and faster
-    soup = BeautifulSoup(request.read(), "lxml")
-    return soup
-
-
-def get_cover(cover_url):
+def get_cover(cover_url, cover_file):
     print(cover_url)
-    tries = 5
-    while tries > 0:
-        try:
-            req = urllib.request.Request(cover_url)
-            req.add_header('User-agent', 'Mozilla/5.0 (Linux x86_64)')
-            request = urllib.request.urlopen(req)
-            temp = request.read()
-            with open('cover.jpg', 'wb') as f:
-                f.write(temp)
-            tries == 0
-            # break
-            return 1
-        except Exception as error:
-            tries -= 1
-            print("Can't retrieve the cover")
-            print(error)
-            return 0
-
-
-###############################################################################
-# TODO: Remove this block when appropriate
-# Workaround for bug in ebooklib 0.15.
-# Something goes wrong when adding an image as a cover, and we need to work
-# around it by replacing the get_template function with our own that takes care
-# of properly encoding the template as utf8.
-if VERSION[1] == 15:
-    original_get_template = epub.EpubBook.get_template
-
-    def new_get_template(*args, **kwargs):
-        return original_get_template(*args, **kwargs).encode(encoding='utf8')
-
-    epub.EpubBook.get_template = new_get_template
-###############################################################################
+    try:
+        with open(cover_file, 'wb') as f:
+            f.write(gsweb.get_url(cover_url))
+        return 1
+    except Exception as error:
+        print("Can't retrieve the cover")
+        print(error)
+        print("Continuing without a cover")
+        return 0
 
 
 def clean_text(text):
@@ -143,21 +82,22 @@ def clean_text(text):
 
 
 def get_page(text_url):
-    text = get_html(text_url).select_one('pre').findChildren()
+    text = gsweb.get_soup(text_url).select_one('pre').findChildren()
     return text
 
 
 def get_chapter(url):
     global chapterCount
     chapterCount = chapterCount + 1
-    pagehtml = get_html(url)
+    pagehtml = gsweb.get_soup(url)
     print("Current url: " + url)
     pages_re = re.compile('"pages":([0-9]*),', re.IGNORECASE)
     pages = int(pages_re.search(str(pagehtml)).group(1))
     print("Pages in this chapter: {}".format(pages))
     text = []
-    chaptertitle = pagehtml.select('h2')[0].get_text().strip()
-    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" + str(chapterCount))
+    chaptertitle = pagehtml.select('h1.h2')[0].get_text().strip()
+    chapterfile = "{}.xhtml".format(chaptertitle.replace(" ", "-") + "-" +
+                                    str(chapterCount))
     text.append("<h2>{}</h2>\n".format(chaptertitle))
     for i in range(1, pages+1):
         page_url = url + "/page/" + str(i)
@@ -166,21 +106,19 @@ def get_chapter(url):
         for j in get_page(page_url):
             text.append(j.prettify())
         text.append('</div>\n')
-    chapter = epub.EpubHtml(title=chaptertitle, file_name=chapterfile,
-                            lang='en')
-    chapter.content = "".join(text)
-    return chapter
+    chapter = "".join(text)
+    return chaptertitle, chapterfile, chapter
 
 
 def get_book(initial_url):
     base_url = 'http://www.wattpad.com'
-    html = get_html(initial_url)
+    html = gsweb.get_soup(initial_url)
 
     # Get basic book information
-    author = html.select('div.author-info strong a')[0].get_text()
-    title = html.select('h1')[0].get_text().strip()
-    description = html.select('h2.description')[0].get_text()
-    coverurl = html.select('div.cover.cover-lg img')[0]['src']
+    author = html.select('div.author-info__username')[0].get_text()
+    title = html.select('div.story-info__title')[0].get_text().strip()
+    description = html.select('pre.description-text')[0].get_text()
+    coverurl = html.select('div.story-cover img')[0]['src']
     labels = ['Wattpad']
     for label in html.select('div.tags a'):
         if '/' in label['href']:
@@ -196,8 +134,8 @@ def get_book(initial_url):
     # print(next_page_url)
 
     # Get list of chapters
-    chapterlist_url = "{}{}".format(initial_url, "/parts")
-    chapterlist = get_html(chapterlist_url).select('ul.table-of-contents a')
+    chapterlist_url = initial_url
+    chapterlist = gsweb.get_soup(chapterlist_url).select('.story-parts ul li a')
 
     # Remove from the file name those characters that Microsoft does NOT allow.
     # This also affects the FAT filesystem used on most phone/tablet sdcards
@@ -212,75 +150,43 @@ def get_book(initial_url):
 
     epubfile = "{} - {}.epub".format(filename, author)
     if not os.path.exists(epubfile):
-        book = epub.EpubBook()
-        book.set_identifier("wattpad.com//%s/%s" % (initial_url.split('/')[-1],
-                                                    len(chapterlist)))
-        book.set_title(title)
+        identifier = "wattpad.com//%s/%s" % (initial_url.split('/')[-1],
+                                             len(chapterlist))
+        LANGUAGE = 'en'
+        book = MyBook(identifier, title, LANGUAGE, 'wattpad2epub')
         book.add_author(author)
-        book.set_language('en')
-        # book.add_metadata('DC', 'subject', 'Wattpad')
-        for label in labels:
-            book.add_metadata('DC', 'subject', label)
+        # Add all labels.
+        book.add_labels(labels)
         # Add a cover if it's available
-        if get_cover(coverurl):
-            cover = True
-            book.set_cover(file_name='cover.jpg', content=open('cover.jpg',
-                                                               'rb').read(),
-                           create_page=True)
-            os.remove('cover.jpg')
+        cover_file = 'cover.jpg'
+        if get_cover(coverurl, cover_file):
+            book.add_cover(cover_file)
+            os.remove(cover_file)
 
         # Define CSS style
-        css_path = os.path.join(mypath, "CSS", "nav.css")
-        nav_css = epub.EpubItem(uid="style_nav", file_name="Style/nav.css",
-                                media_type="text/css",
-                                content=open(css_path).read())
-
-        css_path = os.path.join(mypath, "CSS", "body.css")
-        body_css = epub.EpubItem(uid="style_body", file_name="Style/body.css",
-                                 media_type="text/css",
-                                 content=open(css_path).read())
-        # Add CSS file
-        book.add_item(nav_css)
-        book.add_item(body_css)
+        with open(os.path.join(PROG_DIR, "CSS", "nav.css")) as style_nav:
+            book.add_nav_style(style_nav.read())
+        with open(os.path.join(PROG_DIR, "CSS", "body.css")) as style_body:
+            book.add_body_style(style_body.read())
 
         # Introduction
-        intro_ch = epub.EpubHtml(title='Introduction', file_name='intro.xhtml')
-        intro_ch.add_item(body_css)
-        template_path = os.path.join(mypath, "HTML", "intro.xhtml")
-        intro_template = Template(open(template_path).read())
-        intro_html = intro_template.substitute(title=title, author=author,
-                                               url=initial_url,
-                                               synopsis=description)
-        intro_ch.content = intro_html
-        book.add_item(intro_ch)
+        book.add_intro(author, initial_url, description,
+                       os.path.join(PROG_DIR, "HTML", "intro.xhtml"))
 
-        allchapters = []
         for item in chapterlist:
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
                 print("Working on: {}".format(chaptertitle).encode("utf-8"))
-                chapter = get_chapter("{}{}".format(base_url, item['href']))
-                book.add_item(chapter)
-                allchapters.append(chapter)
+                ch_title, ch_file, ch_text = get_chapter(
+                    "{}{}".format(base_url, item['href']))
+                book.add_chapter(chaptertitle, ch_file, LANGUAGE, ch_text)
 
-        # Define Table of Contents
-        book.toc = (epub.Link('intro.xhtml', 'Introduction', 'intro'),
-                    (epub.Section('Chapters'), allchapters))
-
-        # Add default NCX and Nav file
-        book.add_item(epub.EpubNcx())
-        book.add_item(epub.EpubNav())
-
-        # Basic spine
-        myspine = []
-        if cover:
-            myspine.append('cover')
-        myspine.extend([intro_ch, 'nav'])
-        myspine.extend(allchapters)
-        book.spine = myspine
+        # Define Table of Contents, NCX, Nav and book spine
+        book.finalize()
 
         # Write the epub to file
-        epub.write_epub(epubfile, book, {})
+        book.write(epubfile)
+
     else:
         print("Epub file already exists, not updating")
 
