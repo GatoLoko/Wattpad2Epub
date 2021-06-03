@@ -134,8 +134,7 @@ def get_book(initial_url):
     # print(next_page_url)
 
     # Get list of chapters
-    chapterlist_url = initial_url
-    chapterlist = gsweb.get_soup(chapterlist_url).select('.story-parts ul li a')
+    chapterlist = list(dict.fromkeys(html.select('.story-parts ul li a')))
 
     # Remove from the file name those characters that Microsoft does NOT allow.
     # This also affects the FAT filesystem used on most phone/tablet sdcards
