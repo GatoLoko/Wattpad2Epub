@@ -27,10 +27,13 @@ import os
 import sys
 import re
 
+VERSION = '1.0'
+
 PROG_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(PROG_DIR, "libs"))
 try:
     import gsweb
+    import easygui
     from gsepub import MyBook
 except ImportError:
     raise
@@ -110,7 +113,7 @@ def get_chapter(url):
     return chaptertitle, chapterfile, chapter
 
 
-def get_book(initial_url):
+def get_book(initial_url, base_dir):
     base_url = 'http://www.wattpad.com'
     html = gsweb.get_soup(initial_url)
 
@@ -147,7 +150,7 @@ def get_book(initial_url):
     # Apple products disallow files starting with dot
     filename = filename.lstrip('.')
 
-    epubfile = "{} - {}.epub".format(filename, author)
+    epubfile = os.path.join(base_dir, "{} - {}.epub".format(filename, author))
     if not os.path.exists(epubfile):
         identifier = "wattpad.com//%s/%s" % (initial_url.split('/')[-1],
                                              len(chapterlist))
@@ -189,6 +192,49 @@ def get_book(initial_url):
     else:
         print("Epub file already exists, not updating")
 
+class GUI(object):
+    """docstring for GUI."""
+
+    STANDARD_TITLE = "Wattpad Downloader [v%s]" % VERSION
+    STANDARD_LOCATION = "%USERPROFILE%\\Documents" if sys.platform == "win32" else "~/Documents"
+
+    def __init__(self):
+        super(GUI, self).__init__()
+        self.initial_GUI()
+
+    def initial_GUI(self):
+        # check how many eboos the user wants to download
+        choice_ist = ('Single Story Download', 'Bulk Download')
+        choice = easygui.choicebox(msg="Welcome to Wattpad Downloader",
+                          title=self.STANDARD_TITLE,
+                          choices=choice_ist,
+                          preselect=0)
+
+        for i, item in enumerate(choice_ist):
+            if item == choice:
+                self.download_select(i)
+                break
+
+        # easygui.textbox(msg='Wattpad URLs\n 1 URL per line', title='Wattpad Downloader')
+    def download_select(self, type):
+        if type == 0: # standard 1 book download
+            self.single_book_donwload()
+        elif type == 1:
+            easygui.msgbox("This option has not been implemented yet")
+        else:
+            easygui.msgbox("This option has not been implemented yet")
+
+    def single_book_donwload(self):
+        url = easygui.enterbox(msg="Whattpad Book URL & Save Location",
+                               title=self.STANDARD_TITLE,
+                               default="http://www.wattpad.com/story/12345678-title-here")
+        savelocation = easygui.diropenbox(msg="Save location",
+                                          title=self.STANDARD_TITLE,
+                                          default=self.STANDARD_LOCATION)
+        try:
+            get_book(url, savelocation)
+        except Exception as e:
+            easygui.exceptionbox(msg=e, title=self.STANDARD_TITLE)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -199,13 +245,19 @@ if __name__ == "__main__":
         argument_default=argparse.SUPPRESS)
 
     parser.add_argument('initial_url', metavar='initial_url', type=str,
-                        nargs=1, help="Book's URL.")
+                        nargs='?', default=[], help="Book's URL.")
     parser.add_argument('-d', '--debug', action='store_true', default=False,
                         help='print debug messages to stdout')
+
+    parser.add_argument('--cli', action='store_true', default=False,
+                        help='run in GUI mode')
 
     args = parser.parse_args()
     if args.debug:
         debug = True
         print(args)
 
-    get_book(args.initial_url[0])
+    if len(args.initial_url) == 0 and not args.cli:
+         gui = GUI() # start GUI if no URL has been specified
+    elif len(args.initial_url) == 1 or args.cli:
+         get_book(args.initial_url[0], mypath)
