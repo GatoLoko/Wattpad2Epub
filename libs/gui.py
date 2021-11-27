@@ -82,7 +82,7 @@ class GUI(object):
         try:
             if easygui.ynbox(msg="Download [%s]?" % url, title=self.STANDARD_TITLE):
                 self.download_function(url, savelocation)
-                easygui.msgbox(msg="Download Finnished.\nFile saved to [%s]" % savelocation,
+                easygui.msgbox(msg="Download Finished.\nFile saved to [%s]" % savelocation,
                                title=self.STANDARD_TITLE)
             else:
                 easygui.msgbox(msg="Download Aborted", title=self.STANDARD_TITLE)
@@ -113,7 +113,7 @@ class GUI(object):
                 errmsg = "It looks like something went wrong... Your download failed.\n\n%s" % str(e)
                 easygui.msgbox(msg=errmsg, title=self.STANDARD_TITLE)
 
-        easygui.msgbox(msg="Downloads Finnished.\nFiles saved to [%s]" % savelocation,
+        easygui.msgbox(msg="Downloads Finished.\nFiles saved to [%s]" % savelocation,
                        title=self.STANDARD_TITLE)
 
     # Create a msgbox on a separate thread so that it will not halt the process
