@@ -221,7 +221,7 @@ class GUI(object):
         if type == 0: # standard 1 book download
             self.single_book_donwload()
         elif type == 1:
-            easygui.msgbox("This option has not been implemented yet")
+            self.bulk_download()
         else:
             easygui.msgbox("This option has not been implemented yet")
 
@@ -232,14 +232,48 @@ class GUI(object):
         savelocation = easygui.diropenbox(msg="Save location",
                                           title=self.STANDARD_TITLE,
                                           default=self.STANDARD_LOCATION)
+        if savelocation == None:
+            easygui.msgbox(msg="A savelocation is required", title=self.STANDARD_TITLE)
+            return
         try:
-            easygui.msgbox(msg="Starting Donwload", title=self.STANDARD_TITLE)
-            get_book(url, savelocation)
-            easygui.msgbox(msg="Download Finnished.\nFile saved to %s" % savelocation, title=self.STANDARD_TITLE)
+            if easygui.ynbox(msg="Download [%s]?" % url, title=self.STANDARD_TITLE):
+                get_book(url, savelocation)
+                easygui.msgbox(msg="Download Finnished.\nFile saved to [%s]" % savelocation,
+                               title=self.STANDARD_TITLE)
+            else:
+                easygui.msgbox(msg="Download Aborted", title=self.STANDARD_TITLE)
         except Exception as e:
-            errmsg=str(e).split('\n')[-1]
-            easygui.exceptionbox(msg=errmsg, title=self.STANDARD_TITLE)
-            easygui.msgbox("It looks like something went wrong... Your download failed.")
+            errmsg = "It looks like something went wrong... Your download failed.\n\n%s" % str(e)
+            easygui.msgbox(msg=errmsg, title=self.STANDARD_TITLE)
+
+    def bulk_download(self):
+        user_input = easygui.textbox(msg = "Please enter one URL per line",
+                                   title=self.STANDARD_TITLE,
+                                   text="http://www.wattpad.com/story/12345678-title-here")
+        url_list = user_input.split("\n")
+        savelocation = easygui.diropenbox(msg="Save location",
+                                          title=self.STANDARD_TITLE,
+                                          default=self.STANDARD_LOCATION)
+        if savelocation == None:
+            easygui.msgbox(msg="A savelocation is required", title=self.STANDARD_TITLE)
+            return
+        for url in url_list:
+            # skip if line is empty
+            if not url or url.isspace():
+                continue
+            easygui.msgbox(msg="Downloading [%s]" % url, title=self.STANDARD_TITLE)
+            # TODO: make this msg run on another thread so that it does not halt the downloads
+            try:
+                print(url)
+                get_book(url, savelocation)
+            except Exception as e:
+                errmsg = "It looks like something went wrong... Your download failed.\n\n%s" % str(e)
+                easygui.msgbox(msg=errmsg, title=self.STANDARD_TITLE)
+
+        easygui.msgbox(msg="Downloads Finnished.\nFiles saved to [%s]" % savelocation,
+                       title=self.STANDARD_TITLE)
+
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
