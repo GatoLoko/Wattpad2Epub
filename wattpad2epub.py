@@ -27,8 +27,6 @@ import os
 import sys
 import re
 
-VERSION = '1.0'
-
 PROG_DIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.join(PROG_DIR, "libs"))
 try:
@@ -179,7 +177,7 @@ def get_book(initial_url, base_dir):
         for item in chapterlist:
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
-                print("Working on: {}".format(chaptertitle).encode("utf-8"))
+                print(str("Working on: {}".format(chaptertitle).encode("utf-8")))
                 ch_title, ch_file, ch_text = get_chapter(
                     "{}{}".format(base_url, item['href']))
                 book.add_chapter(chaptertitle, ch_file, LANGUAGE, ch_text)
