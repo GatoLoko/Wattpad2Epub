@@ -71,9 +71,10 @@ def get_cover(cover_url, cover_file):
             f.write(gsweb.get_url(cover_url))
         return 1
     except Exception as error:
-        print("Can't retrieve the cover")
-        print(error)
-        print("Continuing without a cover")
+        # print("Can't retrieve the cover")
+        # print(error)
+        # print("Continuing without a cover")
+        raise Exception("Can't retrieve cover", error)
         return 0
 
 
@@ -190,7 +191,7 @@ def get_book(initial_url, base_dir):
         book.write(epubfile)
 
     else:
-        print("Epub file already exists, not updating")
+        raise Exception("Epub file already exists, not updating")
 
 class GUI(object):
     """docstring for GUI."""
@@ -232,9 +233,13 @@ class GUI(object):
                                           title=self.STANDARD_TITLE,
                                           default=self.STANDARD_LOCATION)
         try:
+            easygui.msgbox(msg="Starting Donwload", title=self.STANDARD_TITLE)
             get_book(url, savelocation)
+            easygui.msgbox(msg="Download Finnished.\nFile saved to %s" % savelocation, title=self.STANDARD_TITLE)
         except Exception as e:
-            easygui.exceptionbox(msg=e, title=self.STANDARD_TITLE)
+            errmsg=str(e).split('\n')[-1]
+            easygui.exceptionbox(msg=errmsg, title=self.STANDARD_TITLE)
+            easygui.msgbox("It looks like something went wrong... Your download failed.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
