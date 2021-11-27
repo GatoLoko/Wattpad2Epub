@@ -177,7 +177,7 @@ def get_book(initial_url, base_dir):
         for item in chapterlist:
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
-                print(str("Working on: {}".format(chaptertitle).encode("utf-8")))
+                print("Working on: {}".format(chaptertitle))
                 ch_title, ch_file, ch_text = get_chapter(
                     "{}{}".format(base_url, item['href']))
                 book.add_chapter(chaptertitle, ch_file, LANGUAGE, ch_text)
