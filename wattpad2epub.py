@@ -215,5 +215,7 @@ if __name__ == "__main__":
 
     if len(args.initial_url) == 0 and not args.cli:
          gui = GUI() # start GUI if no URL has been specified
+         gui.download_function = get_book
+         gui.initialize_GUI()
     elif len(args.initial_url) == 1 or args.cli:
          get_book(args.initial_url[0], mypath)
