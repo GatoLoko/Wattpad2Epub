@@ -105,7 +105,7 @@ def get_chapter(url):
             text.append(j.prettify())
         text.append('</div>\n')
     chapter = "".join(text)
-    return chaptertitle, chapterfile, chapter
+    return chapterfile, chapter
 
 
 def get_book(initial_url):
@@ -181,7 +181,7 @@ def get_book(initial_url):
             chaptertitle = item.get_text().strip().replace("/", "-")
             if chaptertitle.upper() != "A-N":
                 print("Working on: {}".format(chaptertitle).encode("utf-8"))
-                ch_title, ch_file, ch_text = get_chapter(
+                ch_file, ch_text = get_chapter(
                     "{}{}".format(base_url, item['href']))
                 book.add_chapter(chaptertitle, ch_file, LANGUAGE, ch_text)
 
