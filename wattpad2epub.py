@@ -117,6 +117,11 @@ def get_book(initial_url):
     html = gsweb.get_soup(initial_url)
 
     # Get basic book information
+    if debug:
+        text = html.select('div.author-info__username')
+        print("Text: ")
+        print(text.prettify())
+
     author = html.select('div.author-info__username')[0].get_text()
     title = html.select('div.story-info__title')[0].get_text().strip()
     description = html.select('pre.description-text')[0].get_text()
