@@ -172,8 +172,6 @@ def get_book(initial_url):
         # Define CSS style
         with open(os.path.join(PROG_DIR, "CSS", "nav.css")) as style_nav:
             book.add_nav_style(style_nav.read())
-        with open(os.path.join(PROG_DIR, "CSS", "body.css")) as style_body:
-            book.add_body_style(style_body.read())
 
         # Introduction
         book.add_intro(author, initial_url, description,
