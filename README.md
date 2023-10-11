@@ -5,6 +5,10 @@
 Wattpad2Epub downloads and converts Wattpad books into Epub files you can use
 with your favorite ebook reader.
 
+This is a command line program, so a basic understanding of the command line is
+expected (at least until a gui is added (don't hold your breath on that)). If that's
+a problem for you, this may not be the program you are looking for.
+
 ## Why Wattpad2Epub?
 
 Wattpad doesn't offer an option to download a book. This forces you to remain
