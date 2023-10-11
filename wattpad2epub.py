@@ -24,16 +24,12 @@ Created on Wed Feb 18 22:26:23 2015
 
 import argparse
 import os
-import sys
 import re
 
+from libs import gsweb
+from libs.gsepub import MyBook
+
 PROG_DIR = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(PROG_DIR, "libs"))
-try:
-    import gsweb
-    from gsepub import MyBook
-except ImportError:
-    raise
 
 debug = False
 
