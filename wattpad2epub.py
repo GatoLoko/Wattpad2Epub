@@ -78,12 +78,14 @@ def clean_text(text):
 
 
 def get_page(text_url):
+    text_url = gsweb.quote(text_url)
     text = gsweb.get_soup(text_url).select_one('pre').findChildren()
     return text
 
 
 def get_chapter(url):
     global chapterCount
+    url = gsweb.quote(url)
     chapterCount = chapterCount + 1
     pagehtml = gsweb.get_soup(url)
     print("Current url: " + url)
@@ -108,6 +110,10 @@ def get_chapter(url):
 
 def get_book(initial_url):
     base_url = 'http://www.wattpad.com'
+
+    # Quote any non ascii chars in the initial url.
+    initial_url = gsweb.quote(initial_url)
+
     html = gsweb.get_soup(initial_url)
 
     # Get basic book information
