@@ -1,3 +1,3 @@
 [submodule "gslibs"]
 	path = libs
-	url = git@raspi3.local:gatoloko/gslibs.git
+	url = https://github.com/GatoLoko/gslibs.git
