@@ -1,3 +1,4 @@
 [submodule "gslibs"]
 	path = libs
 	url = https://github.com/GatoLoko/gslibs.git
+	branch = main
