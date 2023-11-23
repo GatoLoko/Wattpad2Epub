@@ -1,4 +1,22 @@
-# Readme
+# Readme (THIS REPOSITORY IS DEPRECATED)
+
+## Deprecation warning
+
+This repsitoriy is being deprecated. No further changes will be done. You are
+free to fork it if you want to.
+
+I had been fixing, rewriting and testing things for a new and improved version
+of Wattpad2Epub when, suddenly, everything started to break apart.
+
+Investigating the new breaks I found out Wattpad has made changes to their page
+generation, adding most of the page content dynamically through JavaScript.
+
+The simplest way to work around this would be by using the 'requests_html' python
+module, but it works by installing and manipulating a browser (chrome by
+default), and that is something I'm not interested in.
+
+I had already lost most of my interest in wattpad to begin with, and this is
+the straw that breaks the camel's back, so there will be no more changes here.
 
 ## What is Wattpad2Epub
 
@@ -6,7 +24,7 @@ Wattpad2Epub downloads and converts Wattpad books into Epub files you can use
 with your favorite ebook reader.
 
 This is a command line program, so a basic understanding of the command line is
-expected (at least until a gui is added (don't hold your breath on that)). If that's
+expected (at least until a GUI is added (don't hold your breath on that)). If that's
 a problem for you, this may not be the program you are looking for.
 
 ## Why Wattpad2Epub?
@@ -22,7 +40,8 @@ reading and self publication.
 You will need python3. You can install it with brew in osx.
 For our main script you will need BeatifulSoup4 and ebooklib,
 you can install them with:
-```
+
+```console
 pip3 install BeautifulSoup4
 pip3 install ebooklib
 ```
@@ -30,9 +49,12 @@ pip3 install ebooklib
 ## Running it
 
 You can run the python script doing:
-`python3 wattpad2epub.py your_url_argument`
 
-> `your_url_argument` should be your story url, for example: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
+```console
+python3 wattpad2epub.py your_url_argument
+```
+
+> `your_url_argument` should be your story URL, for example: `http://www.wattpad.com/story/53207033-the-arwain-chronicles`
 
 ## Output
 
@@ -47,28 +69,28 @@ As of Dec. 2018m the API has been split into two part, a "public API" and a
 
 [Public API](https://www.wattpad.com/developer/docs/api):
 
-  - Has been in beta state since 2015, and they warn that it's subject to
-    change, which makes it unreliable. (2018)
-  - Does NOT provide a way to retrieve story or chapter text, making it
-    unsuitable for Wattpad2Epub purposes. (2018)
-  - Needs double authentication (application + user). (2015-2018)
+- Has been in beta state since 2015, and they warn that it's subject to
+  change, which makes it unreliable. (2018)
+- Does NOT provide a way to retrieve story or chapter text, making it
+  unsuitable for Wattpad2Epub purposes. (2018)
+- Needs double authentication (application + user). (2015-2018)
 
 [Private API](http://developer.wattpad.com/docs/api):
 
-  - Has been moved behind a login for which the wattpad user account doesnt
-    work and there is nothing to help you find out how to gain access or
-    whether it's at all possible. (2018)
-  - Isn't publicized. Found it through a
-    [comment on Stack Overflow](https://stackoverflow.com/questions/27070973/does-wattpad-have-an-api),
-    which probably means it's not meant for external applications use. (2018)
-  - When the documentation for the "private API" was accesible it was
-    incomplete, with some essential parts missing. (2015)
-  - There were some server failures during my tests. (2015)
-  - Couldn't find a reliable way to retrieve a full story text. (2015)
-  - Needs double authentication (application + user). (2015-2018)
+- Has been moved behind a login for which the wattpad user account doesnt
+  work and there is nothing to help you find out how to gain access or
+  whether it's at all possible. (2018)
+- Isn't publicized. Found it through a
+  [comment on Stack Overflow](https://stackoverflow.com/questions/27070973/does-wattpad-have-an-api),
+  which probably means it's not meant for external applications use. (2018)
+- When the documentation for the "private API" was accesible it was
+  incomplete, with some essential parts missing. (2015)
+- There were some server failures during my tests. (2015)
+- Couldn't find a reliable way to retrieve a full story text. (2015)
+- Needs double authentication (application + user). (2015-2018)
 
 Based on all this, I've given up on using the API at all, and chosen to keep
-parsing the html because it allows us to:
+parsing the HTML because it allows us to:
 
   - Retrieve full story text (essential)
   - Not require the user to authenticate (important)
